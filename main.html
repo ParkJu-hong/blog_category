@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>네이버 블로그 검색</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+
+        #searchInput {
+            padding: 10px;
+            width: 300px;
+        }
+
+        #searchButton {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        #resultContainer {
+            margin-top: 20px;
+        }
+
+        #bottomResultContainer {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-around;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>벤치마킹 블로그 글 주제 검색</h1>
+    <input type="text" id="searchInput" placeholder="블로그 글 주제를 입력하세요">
+    <button id="searchButton" onclick="searchBlog()">검색</button>
+    <div id="resultContainer"></div>
+    <div id="bottomResultContainer">
+    </div>
+
+    <script>
+        let pageNum = 1;
+        let searchQuery = '';
+        const clientId = 'pJjm8Zb3_IGOLokzRLfF';
+        const apiKey = 'kCHWKs_dbr'; // 여기에 발급받은 네이버 API 키를 넣어주세요
+
+        function searchBlog() {
+            const query = document.getElementById('searchInput').value;
+            searchQuery = document.getElementById('searchInput').value;
+            pageNum = 1;
+            if (!query) {
+                alert('검색어를 입력하세요.');
+                return;
+            }
+
+            const apiUrl = `http://localhost:3000/search-blog?query=${encodeURIComponent(query)}&start=1`;
+
+            fetch(apiUrl, {
+                headers: {
+                    'X-Naver-Client-Id': clientId,
+                    'X-Naver-Client-Secret': apiKey,
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    pageNum = data.start;
+                    displayResults(data.items);
+                    const bottomResultContainer = document.getElementById('bottomResultContainer');
+                    const pageNumDom = document.getElementById('pageNum');
+                    bottomResultContainer.innerHTML = `
+        <button onclick="nextData('left')">&lt;</button>
+        <div id='pageNum'></div>
+        <button onclick="nextData('right')">></button>`;
+
+                    if (pageNumDom === true) {
+                        pageNumDom.innerHTML = '';
+                        pageNumDom.innerHTML = pageNum;
+                    }
+                })
+                .catch(error => {
+                    console.error('에러 발생:', error);
+                    alert('검색 중 오류가 발생했습니다.');
+                });
+        }
+
+        function displayResults(items) {
+            const resultContainer = document.getElementById('resultContainer');
+            resultContainer.innerHTML = '';
+
+            if (items.length === 0) {
+                resultContainer.innerHTML = '<p>검색 결과가 없습니다.</p>';
+                return;
+            }
+
+            items.forEach(item => {
+                const title = item.title;
+                const link = item.link;
+
+                const blogItem = document.createElement('div');
+                blogItem.innerHTML = `<p><a href="${link}" target="_blank">${title}</a></p>`;
+                resultContainer.appendChild(blogItem);
+            });
+        }
+        async function nextdisplayResults(pageNum) {
+            let items;
+            const resultContainer = document.getElementById('resultContainer');
+            resultContainer.innerHTML = '';
+
+
+            const apiUrl = `http://localhost:3000/search-blog?query=${encodeURIComponent(searchQuery)}&start=${pageNum}`;
+            console.log("apiUrl : ", apiUrl);
+            await fetch(apiUrl, {
+                headers: {
+                    'X-Naver-Client-Id': clientId,
+                    'X-Naver-Client-Secret': apiKey,
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    data.items.forEach(item => {
+                        const title = item.title;
+                        const link = item.link;
+
+                        const blogItem = document.createElement('div');
+                        blogItem.innerHTML = `<p><a href="${link}" target="_blank">${title}</a></p>`;
+                        resultContainer.appendChild(blogItem);
+                    });
+
+                    const pageNumDom = document.getElementById('pageNum');
+                    pageNumDom.innerHTML = '';
+                    pageNumDom.innerHTML = pageNum;
+                })
+                .catch(error => {
+                    console.error('에러 발생:', error);
+                    alert('검색 중 오류가 발생했습니다.');
+                });
+        }
+
+        function nextData(allow) {
+            if (allow === 'left' && pageNum === 1) {
+                alert('첫번째 페이지입니다.')
+            }
+            // if (allow === 'right' && pageNum === 10) {
+            //     alert('마지막 페이지입니다.')
+            // }
+            if (allow === 'left') {
+                pageNum -= 1;
+                nextdisplayResults(pageNum);
+            }
+            if (allow === 'right') {
+                pageNum += 1;
+                nextdisplayResults(pageNum);
+            }
+            console.log("pageNum : ", pageNum);
+        }
+    </script>
+</body>
+
+</html>
