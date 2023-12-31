@@ -4,7 +4,7 @@ import axios from 'axios';
 import cors from 'cors';
 
 const app = express();
-const PORT = 3000;
+const PORT = 8000;
 
 app.use(express.static('public'));
 app.use(cors())
