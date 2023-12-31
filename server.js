@@ -24,6 +24,12 @@ app.use((req, res, next) => {
     next();
   });
 
+app.get('/', (req, res) => {
+    res.json({
+        test: 'test 성공'
+    })
+})
+
 app.get('/search-blog', async (req, res) => {
     const clientId = 'pJjm8Zb3_IGOLokzRLfF';
     const apiKey = 'kCHWKs_dbr'; // 여기에 발급받은 네이버 API 키를 넣어주세요
