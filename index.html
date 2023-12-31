@@ -57,7 +57,7 @@
                 return;
             }
 
-            const apiUrl = `https://nuclear-lianna-juhong.koyeb.app/:8000/search-blog?query=${encodeURIComponent(query)}&start=1`;
+            const apiUrl = `https://nuclear-lianna-juhong.koyeb.app/search-blog?query=${encodeURIComponent(query)}&start=1`;
 
             fetch(apiUrl, {
                 headers: {
@@ -111,7 +111,7 @@
             resultContainer.innerHTML = '';
 
 
-            const apiUrl = `https://nuclear-lianna-juhong.koyeb.app/:8000/search-blog?query=${encodeURIComponent(searchQuery)}&start=${pageNum}`;
+            const apiUrl = `https://nuclear-lianna-juhong.koyeb.app/search-blog?query=${encodeURIComponent(searchQuery)}&start=${pageNum}`;
             console.log("apiUrl : ", apiUrl);
             await fetch(apiUrl, {
                 headers: {
